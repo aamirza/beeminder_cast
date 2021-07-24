@@ -1,23 +1,22 @@
+#!/data/data/com.termux/files/usr/bin/node
+
 const params = require("./params.json");
 
 const beeminder = require('beeminder');
 const bm = beeminder(params.BEEMINDER_AUTH_TOKEN);
+const fs = require("fs");
 
 function saveURLsToFile(data) {
+    goalUrls = [];
+    for (let i = 0; i <  data['goals'].length; i++) {
+        goalUrls.push(data['goals'][i]['graph_url']);
+    }
     // This is a Tasker function.
-    writeFile('./graph_urls.txt', data);
+    console.log(goalUrls);
+    fs.writeFileSync('./graph_urls.json', JSON.stringify(goalUrls));
 }
 
 bm.getUserSkinny(function(err, result) {
-    if (err) {
-        throw err;
-    }
-
-    goalUrls = [];
-    for (let i = 0; i <  result['goals'].length; i++) {
-        goalUrls.append(result['goals'][i]['graph_url']);
-    }
-    return goalUrls;
 })
     .then(saveURLsToFile)
-    .catch(() => {flash("There was an error fetching Beeminder URLs!")});
+    .catch(console.log);
